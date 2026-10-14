@@ -3,14 +3,17 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Shapes
 import Quickshell.Wayland
+import "../themes" as Themes
+import "../components" as Components
 
 PanelWindow {
     id: frameWindow
     WlrLayershell.layer: WlrLayer.Top
 
-    readonly property real leftThickness: 32
+    readonly property real leftThickness: 48
     readonly property real rightThickness: 12
     readonly property real verticalThickness: 12
+    readonly property var palette: Themes.Macchiato
 
     anchors {
         left: true
@@ -24,7 +27,7 @@ PanelWindow {
     focusable: false
     exclusionMode: ExclusionMode.Ignore
 
-    // The center remains click-through; only the visible frame is in the mask.
+    // The center remains click-through; only the visible frame is interactive.
     mask: Region {
         width: frameWindow.width
         height: frameWindow.height
@@ -38,15 +41,13 @@ PanelWindow {
         }
     }
 
-    // Full-screen surface with its center cut out, like ContentWindow's
-    // inverted border surface. This keeps the desktop visible underneath.
     Shape {
         id: borderSurface
         anchors.fill: parent
 
         ShapePath {
             fillRule: ShapePath.OddEvenFill
-            fillColor: "#24273a"
+            fillColor: frameWindow.palette.base
             strokeColor: "transparent"
             strokeWidth: -1
 
@@ -66,14 +67,13 @@ PanelWindow {
         }
     }
 
-    // Opposing dark shadows preserve the original neumorphic depth without a light highlight.
     MultiEffect {
         anchors.fill: borderSurface
         source: borderSurface
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: "#181926"
+        shadowColor: frameWindow.palette.crust
         shadowOpacity: 0.55
         shadowHorizontalOffset: -10
         shadowVerticalOffset: -10
@@ -85,9 +85,21 @@ PanelWindow {
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: "#181926"
+        shadowColor: frameWindow.palette.crust
         shadowOpacity: 0.55
         shadowHorizontalOffset: 10
         shadowVerticalOffset: 10
+    }
+
+    Components.Time {
+        anchors {
+            left: parent.left
+            top: parent.top
+            bottom: parent.bottom
+            topMargin: frameWindow.verticalThickness
+            bottomMargin: frameWindow.verticalThickness
+        }
+        width: frameWindow.leftThickness
+        palette: frameWindow.palette
     }
 }

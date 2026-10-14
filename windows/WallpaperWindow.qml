@@ -2,14 +2,16 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
+import "../themes" as Themes
 
 PanelWindow {
     id: wallpaperWindow
 
-    readonly property real frameLeftInset: 32
+    readonly property real frameLeftInset: 48
     readonly property real frameRightInset: 12
     readonly property real frameVerticalInset: 12
     readonly property real wallpaperGap: 24
+    readonly property var palette: Themes.Macchiato
 
     WlrLayershell.layer: WlrLayer.Bottom
     WlrLayershell.exclusionMode: ExclusionMode.Ignore
@@ -48,7 +50,8 @@ PanelWindow {
         width: wallpaper.width
         height: wallpaper.height
         radius: 12
-        color: "white"
+        // The mask only uses this item's opacity; a theme color keeps it opaque.
+        color: wallpaperWindow.palette.text
         visible: false
         layer.enabled: true
     }
@@ -60,7 +63,7 @@ PanelWindow {
         width: wallpaper.width
         height: wallpaper.height
         radius: 12
-        color: "#24273a"
+        color: wallpaperWindow.palette.base
         layer.enabled: true
     }
 
@@ -70,7 +73,7 @@ PanelWindow {
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: "#181926"
+        shadowColor: wallpaperWindow.palette.crust
         shadowOpacity: 0.55
         shadowHorizontalOffset: -10
         shadowVerticalOffset: -10
@@ -82,7 +85,7 @@ PanelWindow {
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: "#181926"
+        shadowColor: wallpaperWindow.palette.crust
         shadowOpacity: 0.55
         shadowHorizontalOffset: 10
         shadowVerticalOffset: 10
