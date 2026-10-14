@@ -4,8 +4,8 @@ import QtQuick.Effects
 import Quickshell.Wayland
 import Blobs
 import "../themes" as Themes
-import "../components" as Components
 import "../components/dashboard" as Dashboard
+import "../components/bar" as Bar
 
 PanelWindow {
     id: frameWindow
@@ -26,7 +26,7 @@ PanelWindow {
 
     color: "transparent"
     aboveWindows: true
-    focusable: false
+    focusable: powerConfirmation.visible
     exclusionMode: ExclusionMode.Ignore
 
     // The center remains click-through; only the visible frame plus any expanded
@@ -39,7 +39,7 @@ PanelWindow {
             x: frameWindow.leftThickness
             y: frameWindow.verticalThickness
             width: frameWindow.width - frameWindow.leftThickness - frameWindow.rightThickness
-            height: frameWindow.height - frameWindow.verticalThickness * 2
+            height: powerConfirmation.visible ? 0 : frameWindow.height - frameWindow.verticalThickness * 2
             intersection: Intersection.Subtract
         }
 
@@ -49,6 +49,20 @@ PanelWindow {
             y: dashboard.py
             width: dashboard.gw
             height: dashboard.gh
+        }
+
+        Region {
+            x: powerMenu.px
+            y: powerMenu.py
+            width: powerMenu.gw
+            height: powerMenu.gh
+        }
+
+        Region {
+            x: workspaceMenu.px
+            y: workspaceMenu.py
+            width: workspaceMenu.gw
+            height: workspaceMenu.gh
         }
     }
 
@@ -123,7 +137,40 @@ PanelWindow {
         verticalThickness: frameWindow.verticalThickness
     }
 
-    Components.Time {
+    Bar.WorkspaceMenu {
+        id: workspaceMenu
+        blobLayer: blobLayer
+        group: blobGroup
+        overlayLayer: overlayLayer
+        palette: frameWindow.palette
+        screenWidth: frameWindow.width
+        screenHeight: frameWindow.height
+        leftThickness: frameWindow.leftThickness
+        rightThickness: frameWindow.rightThickness
+        verticalThickness: frameWindow.verticalThickness
+        workspaceZone: leftBar.workspaceZone
+        buttonHovered: leftBar.workspacesHovered
+        workspaceId: leftBar.hoveredWorkspaceId
+        workspaces: leftBar.workspaces
+        blocked: powerConfirmation.visible
+    }
+
+    Bar.PowerMenu {
+        id: powerMenu
+        blobLayer: blobLayer
+        group: blobGroup
+        overlayLayer: overlayLayer
+        palette: frameWindow.palette
+        screenHeight: frameWindow.height
+        leftThickness: frameWindow.leftThickness
+        verticalThickness: frameWindow.verticalThickness
+        confirmationOpen: powerConfirmation.visible
+        buttonHovered: leftBar.powerHovered
+        onActionRequested: selectedAction => powerConfirmation.action = selectedAction
+    }
+
+    Bar.LeftBar {
+        id: leftBar
         anchors {
             left: parent.left
             top: parent.top
@@ -133,5 +180,19 @@ PanelWindow {
         }
         width: frameWindow.leftThickness
         palette: frameWindow.palette
+        outputName: frameWindow.screen?.name ?? ""
+        powerOpen: powerMenu.open
+        workspacesOpen: workspaceMenu.open
+    }
+
+    Bar.PowerConfirmation {
+        id: powerConfirmation
+        palette: frameWindow.palette
+        onConfirmed: selectedAction => {
+            if (selectedAction === "restart")
+                Quickshell.execDetached(["systemctl", "reboot"]);
+            else if (selectedAction === "shutdown")
+                Quickshell.execDetached(["systemctl", "poweroff"]);
+        }
     }
 }

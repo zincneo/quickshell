@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import ".." as C
 import "../../services" as Svc
 
@@ -10,52 +9,20 @@ Item {
     readonly property string font: "Rubik"
 
     // Avatar logo; click toggles between catppuccin0 and catppuccin1.
-    property int logoIndex: 0
+    property alias logoIndex: avatar.logoIndex
 
     RowLayout {
         anchors.fill: parent
         anchors.margins: 12
         spacing: 16
 
-        // Circular avatar.
-        Item {
+        C.AvatarLogo {
+            id: avatar
             Layout.alignment: Qt.AlignVCenter
-            Layout.fillHeight: true
-            Layout.preferredWidth: height
-
-            Rectangle {
-                anchors.fill: parent
-                radius: width / 2
-                color: root.palette.surface1
-            }
-
-            Image {
-                id: logoImg
-                anchors.fill: parent
-                source: "../../assets/logo/catppuccin" + root.logoIndex + ".png"
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: true
-                visible: false
-            }
-            Rectangle {
-                id: circleMask
-                anchors.fill: parent
-                radius: width / 2
-                visible: false
-                layer.enabled: true
-            }
-            MultiEffect {
-                anchors.fill: parent
-                source: logoImg
-                maskEnabled: true
-                maskSource: circleMask
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.logoIndex = 1 - root.logoIndex
-            }
+            Layout.preferredWidth: 76
+            Layout.preferredHeight: 76
+            Layout.maximumWidth: 76
+            Layout.maximumHeight: 76
         }
 
         ColumnLayout {

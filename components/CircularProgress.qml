@@ -9,6 +9,14 @@ Item {
     property color fgColour: "white"
     property color bgColour: "#40ffffff"
     property real strokeWidth: 6
+    property real startAngle: -90
+    property real sweepAngle: 360
+    property real spacing: 0
+    readonly property real clampedValue: Math.max(0, Math.min(1, isNaN(value) ? 0 : value))
+    readonly property real size: Math.min(width, height)
+    readonly property real arcRadius: Math.max(0, (size - strokeWidth) / 2)
+    readonly property real gapAngle: spacing > 0 ? (spacing + strokeWidth) / Math.max(1, arcRadius) * 180 / Math.PI : 0
+    readonly property real remainingAngle: Math.max(0, sweepAngle * (1 - clampedValue) - gapAngle)
 
     default property alias content: holder.data
 
@@ -17,31 +25,31 @@ Item {
         preferredRendererType: Shape.CurveRenderer
 
         ShapePath {
-            strokeColor: root.bgColour
-            strokeWidth: root.strokeWidth
+            strokeColor: root.remainingAngle > 0 ? root.bgColour : "transparent"
+            strokeWidth: root.remainingAngle > 0 ? root.strokeWidth : 0
             fillColor: "transparent"
             capStyle: ShapePath.RoundCap
             PathAngleArc {
                 centerX: root.width / 2
                 centerY: root.height / 2
-                radiusX: (root.width - root.strokeWidth) / 2
-                radiusY: (root.height - root.strokeWidth) / 2
-                startAngle: -90
-                sweepAngle: 360
+                radiusX: root.arcRadius
+                radiusY: root.arcRadius
+                startAngle: root.startAngle + root.clampedValue * root.sweepAngle + root.gapAngle
+                sweepAngle: root.remainingAngle
             }
         }
         ShapePath {
-            strokeColor: root.fgColour
-            strokeWidth: root.strokeWidth
+            strokeColor: root.clampedValue > 0 ? root.fgColour : "transparent"
+            strokeWidth: root.clampedValue > 0 ? root.strokeWidth : 0
             fillColor: "transparent"
             capStyle: ShapePath.RoundCap
             PathAngleArc {
                 centerX: root.width / 2
                 centerY: root.height / 2
-                radiusX: (root.width - root.strokeWidth) / 2
-                radiusY: (root.height - root.strokeWidth) / 2
-                startAngle: -90
-                sweepAngle: 360 * Math.max(0, Math.min(1, root.value))
+                radiusX: root.arcRadius
+                radiusY: root.arcRadius
+                startAngle: root.startAngle
+                sweepAngle: root.sweepAngle * root.clampedValue
             }
         }
     }

@@ -23,23 +23,22 @@ C.Popout {
     readonly property var tabs: [
         { icon: "dashboard", label: "Dashboard" },
         { icon: "queue_music", label: "Media" },
-        { icon: "speed", label: "Performance" },
-        { icon: "workspaces", label: "Workspaces" }
+        { icon: "speed", label: "Performance" }
     ]
 
     edge: "top"
     cornerRadius: 26
     expandedWidth: 880
-    expandedHeight: 450
+    expandedHeight: currentTab === 2 ? 300 : 450
     openDuration: 320
 
-    expandedX: (screenWidth - expandedWidth) / 2
+    expandedX: leftThickness + (screenWidth - leftThickness - rightThickness - expandedWidth) / 2
     expandedY: verticalThickness
     triggerZone: Qt.rect(expandedX, 0, expandedWidth, verticalThickness)
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 18
+        anchors.margins: 12
         spacing: 12
 
         // Tab bar.
@@ -66,11 +65,12 @@ C.Popout {
                         C.MaterialIcon {
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: tab.modelData.icon
-                            size: 22
+                            size: 20
                             filled: tab.current
                             color: tab.current ? root.palette.mauve : root.palette.subtext0
                         }
                         Text {
+                            id: tabLabel
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: tab.modelData.label
                             color: tab.current ? root.palette.mauve : root.palette.subtext0
@@ -83,7 +83,7 @@ C.Popout {
                     Rectangle {
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
-                        width: tab.current ? 42 : 0
+                        width: tab.current ? Math.max(42, tabLabel.implicitWidth + 8) : 0
                         height: 3
                         radius: 2
                         color: root.palette.mauve
@@ -100,6 +100,7 @@ C.Popout {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
+                        onEntered: root.currentTab = tab.index
                         onClicked: root.currentTab = tab.index
                     }
                 }
@@ -202,9 +203,6 @@ C.Popout {
                 text: "Media"
             }
             D.PerformanceTab {
-                palette: root.palette
-            }
-            D.WorkspacesTab {
                 palette: root.palette
             }
         }

@@ -3,65 +3,50 @@ import QtQuick.Layouts
 import "." as D
 import "../../services" as Svc
 
-// Performance tab: CPU hero card + memory / storage / network stat cards.
 Item {
     id: root
     required property var palette
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 10
+    RowLayout {
+        anchors.centerIn: parent
+        width: parent.width - 28
+        spacing: 24
 
-        D.HeroCard {
+        D.RingCard {
             Layout.fillWidth: true
-            Layout.preferredHeight: 128
             palette: root.palette
-            icon: "memory"
-            label: "CPU"
-            subLabel: Svc.SysUsage.cpuName || "Processor"
             accent: root.palette.mauve
-            usage: Svc.SysUsage.cpu
-            temperature: Svc.SysUsage.cpuTemp
+            mainProgress: Svc.SysUsage.gpuTemp / 100
+            usageProgress: Svc.SysUsage.gpu
+            mainValue: Svc.SysUsage.gpuTemp > 0 ? Svc.SysUsage.gpuTemp.toFixed(0) + "\u00b0C" : "--"
+            mainLabel: "GPU temp"
+            subValue: isNaN(Svc.SysUsage.gpu) ? "--" : (Svc.SysUsage.gpu * 100).toFixed(0) + "%"
+            subLabel: "Usage"
         }
 
-        RowLayout {
+        D.RingCard {
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: 10
+            prominent: true
+            palette: root.palette
+            accent: root.palette.mauve
+            mainProgress: Svc.SysUsage.cpuTemp / 100
+            usageProgress: Svc.SysUsage.cpu
+            mainValue: Svc.SysUsage.cpuTemp > 0 ? Svc.SysUsage.cpuTemp.toFixed(0) + "\u00b0C" : "--"
+            mainLabel: "CPU temp"
+            subValue: (Svc.SysUsage.cpu * 100).toFixed(0) + "%"
+            subLabel: "Usage"
+        }
 
-            D.StatCard {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                palette: root.palette
-                icon: "memory_alt"
-                label: "Memory"
-                accent: root.palette.teal
-                fraction: Svc.SysUsage.memory
-                value1: Svc.SysUsage.memUsedGb.toFixed(1)
-                value2: Svc.SysUsage.memTotalGb.toFixed(1) + " GB"
-            }
-            D.StatCard {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                palette: root.palette
-                icon: "hard_drive"
-                label: "Storage"
-                accent: root.palette.peach
-                fraction: Svc.SysUsage.storage
-                value1: Svc.SysUsage.storageUsedGb.toFixed(0)
-                value2: Svc.SysUsage.storageTotalGb.toFixed(0) + " GB"
-            }
-            D.StatCard {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                palette: root.palette
-                icon: "lan"
-                label: "Network"
-                accent: root.palette.blue
-                fraction: Svc.SysUsage.netPeak > 0 ? Svc.SysUsage.netDown / Svc.SysUsage.netPeak : 0
-                value1: "\u2193 " + Svc.SysUsage.fmtRate(Svc.SysUsage.netDown)
-                value2: "\u2191 " + Svc.SysUsage.fmtRate(Svc.SysUsage.netUp)
-            }
+        D.RingCard {
+            Layout.fillWidth: true
+            palette: root.palette
+            accent: root.palette.mauve
+            mainProgress: Svc.SysUsage.storage
+            usageProgress: Svc.SysUsage.memory
+            mainValue: Svc.SysUsage.memUsedGb.toFixed(1) + "GiB"
+            mainLabel: "Memory"
+            subValue: Svc.SysUsage.storageUsedGb.toFixed(0) + "GiB"
+            subLabel: "Storage"
         }
     }
 }

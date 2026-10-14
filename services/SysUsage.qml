@@ -12,6 +12,8 @@ Singleton {
     property real cpu: 0
     property real memory: 0
     property real storage: 0
+    property real gpu: NaN
+    property real gpuTemp: NaN
 
     // Details.
     property string cpuName: ""
@@ -41,7 +43,6 @@ Singleton {
     FileView { id: statFile; path: "/proc/stat" }
     FileView { id: memFile; path: "/proc/meminfo" }
     FileView { id: netFile; path: "/proc/net/dev" }
-    FileView { id: tempFile; path: "/sys/class/thermal/thermal_zone0/temp" }
     FileView {
         path: "/proc/cpuinfo"
         onLoaded: {
@@ -55,7 +56,6 @@ Singleton {
         statFile.reload();
         memFile.reload();
         netFile.reload();
-        tempFile.reload();
 
         // CPU.
         const p = statFile.text().split("\n")[0].trim().split(/\s+/).slice(1).map(Number);
@@ -79,11 +79,6 @@ Singleton {
             root.memUsedGb = (totKb - availKb) / 1048576;
             root.memory = Math.max(0, Math.min(1, 1 - availKb / totKb));
         }
-
-        // Temperature.
-        const t = parseInt(tempFile.text().trim());
-        if (!isNaN(t) && t > 0)
-            root.cpuTemp = t / 1000;
 
         // Network (sum of non-loopback interfaces).
         let rx = 0, tx = 0;
@@ -110,6 +105,75 @@ Singleton {
         root.netPeak = Math.max(root.netPeak * 0.8, root.netDown, root.netUp, 1024);
     }
 
+    // Read labelled CPU sensors rather than thermal_zone0, which can be an
+    // unrelated ACPI sensor. Missing GPU counters remain unavailable.
+    Process {
+        id: sensorProc
+        command: ["sh", "-c", `
+            cpu=NaN
+            for hw in /sys/class/hwmon/hwmon*; do
+                read -r name < "$hw/name" 2>/dev/null || continue
+                case "$name" in
+                    coretemp|k10temp|zenpower)
+                        if [ -r "$hw/temp1_input" ]; then
+                            read -r cpu < "$hw/temp1_input"
+                            break
+                        fi ;;
+                esac
+            done
+            if [ "$cpu" = NaN ]; then
+                for zone in /sys/class/thermal/thermal_zone*; do
+                    read -r type < "$zone/type" 2>/dev/null || continue
+                    case "$type" in
+                        x86_pkg_temp|cpu-thermal)
+                            read -r cpu < "$zone/temp"
+                            break ;;
+                    esac
+                done
+            fi
+            printf 'cpu %s\\n' "$cpu"
+            if command -v nvidia-smi >/dev/null 2>&1; then
+                nvidia-smi --query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits 2>/dev/null |
+                    awk -F ', *' 'NR==1 {print "gpu", $1, $2}'
+            else
+                for card in /sys/class/drm/card[0-9]*; do
+                    [ -d "$card/device" ] || continue
+                    busy=NaN
+                    temp=NaN
+                    if [ -r "$card/device/gpu_busy_percent" ]; then
+                        read -r busy < "$card/device/gpu_busy_percent"
+                    fi
+                    for hw in "$card"/device/hwmon/hwmon*; do
+                        if [ -r "$hw/temp1_input" ]; then
+                            read -r temp < "$hw/temp1_input"
+                            break
+                        fi
+                    done
+                    if [ "$busy" != NaN ] || [ "$temp" != NaN ]; then
+                        awk -v busy="$busy" -v temp="$temp" 'BEGIN {print "gpu", busy, temp == "NaN" ? "NaN" : temp / 1000}'
+                        break
+                    fi
+                done
+            fi
+        `]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.gpu = NaN;
+                root.gpuTemp = NaN;
+                for (const line of text.trim().split("\n")) {
+                    const fields = line.trim().split(/\s+/);
+                    if (fields[0] === "cpu")
+                        root.cpuTemp = Number(fields[1]) / 1000;
+                    else if (fields[0] === "gpu") {
+                        const usage = Number(fields[1]);
+                        root.gpu = isNaN(usage) ? NaN : Math.max(0, Math.min(1, usage / 100));
+                        root.gpuTemp = Number(fields[2]);
+                    }
+                }
+            }
+        }
+    }
+
     Process {
         id: dfProc
         running: true
@@ -134,6 +198,7 @@ Singleton {
         onTriggered: {
             root._poll();
             dfProc.running = true;
+            sensorProc.running = true;
         }
     }
 }

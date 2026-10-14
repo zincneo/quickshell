@@ -7,12 +7,14 @@ Text {
 
     property real size: 24
     property bool filled: false
+    property real weight: 400
 
     font.family: "Material Symbols Rounded"
     font.pixelSize: size
+    font.weight: root.weight
     font.variableAxes: ({
             FILL: filled ? 1 : 0,
-            wght: 400,
+            wght: root.weight,
             opsz: size
         })
 

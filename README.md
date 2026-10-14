@@ -120,7 +120,9 @@ fonts.packages = with pkgs; [
 | Dashboard·Media（右侧播放器） | **任一 MPRIS 播放器**在运行（`spotify`/`mpv`(带 mpris)/浏览器/`playerctl` 兼容应用） | ✅ 已接（无播放器则显示 No media） |
 | 头像 | `~/.face` 图片 | 放一张即可 |
 | Media 节拍可视化（bongocat） | `cava`、`aubio`、`pipewire` | ⬜ 待接 |
-| Performance/Workspaces 标签 | 待实现 | ⬜ |
+| Performance 标签 | CPU/GPU 传感器、内存与存储 | ✅ 已接 |
+
+工作区入口位于左侧栏：按当前屏幕每组显示最多 5 个工作区，每区最多显示 5 个窗口图标，超出显示 `+N`。悬停后从左上角展开工作区面板，与顶部和左侧边框融合；面板可切换全部工作区并滚动查看、聚焦全部窗口。顶部 Dashboard 仅保留 Dashboard、Media、Performance 三个标签。
 
 > **音乐播放器（右侧面板）**：用的是 Quickshell 内置的 `Quickshell.Services.Mpris`，
 > **不需要额外安装包**，但需要有一个正在运行的 MPRIS 播放器才能显示（封面/标题/

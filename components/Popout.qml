@@ -48,7 +48,11 @@ Item {
     default property alias content: contentInner.data
 
     readonly property bool horizontal: edge === "left" || edge === "right"
-    readonly property bool open: triggerHover.hovered || panelHover.hovered
+    property bool hoverEnabled: true
+    property bool triggerActive: false
+    property bool active: false
+    readonly property bool hovered: triggerHover.hovered || panelHover.hovered
+    readonly property bool open: active || (hoverEnabled && (hovered || triggerActive))
     property real expand: open ? 1 : 0
 
     Behavior on expand {
