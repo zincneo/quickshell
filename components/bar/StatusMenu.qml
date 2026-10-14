@@ -27,7 +27,7 @@ C.Popout {
 
     edge: "left"
     expandedWidth: Math.min(400, screenWidth - leftThickness - rightThickness)
-    expandedHeight: Math.min(currentTab === 0 ? 340 : currentTab === 2 ? bluetoothControls.preferredPanelHeight : 200, screenHeight - verticalThickness * 2)
+    expandedHeight: Math.min(currentTab === 0 ? 340 : currentTab === 1 ? networkControls.preferredPanelHeight : currentTab === 2 ? bluetoothControls.preferredPanelHeight : 200, screenHeight - verticalThickness * 2)
     expandedX: leftThickness
     expandedY: screenHeight - verticalThickness - expandedHeight
     cornerRadius: 24
@@ -67,7 +67,11 @@ C.Popout {
                 windowX: root.expandedX + 16
                 windowY: root.expandedY + 16
             }
-            Item {}
+            NetworkControls {
+                id: networkControls
+                palette: root.palette
+                active: root.open && root.currentTab === 1
+            }
             BluetoothControls {
                 id: bluetoothControls
                 palette: root.palette
