@@ -10,11 +10,14 @@ Rectangle {
     implicitWidth: 32
     implicitHeight: 32
     radius: 11
-    color: !expanded && mouse.containsMouse ? palette.surface1 : "transparent"
+    color: mouse.containsMouse ? palette.surface1 : "transparent"
+    opacity: expanded ? 0 : 1
+    Behavior on opacity {
+        NumberAnimation { duration: 400; easing.type: Easing.InOutCubic }
+    }
 
     C.MaterialIcon {
         anchors.centerIn: parent
-        visible: !root.expanded
         text: "power_settings_new"
         size: 20
         weight: 700

@@ -30,7 +30,7 @@ C.Popout {
     cornerRadius: 26
     expandedWidth: 880
     expandedHeight: currentTab === 2 ? 300 : 450
-    openDuration: 320
+    openDuration: 600
 
     expandedX: leftThickness + (screenWidth - leftThickness - rightThickness - expandedWidth) / 2
     expandedY: verticalThickness

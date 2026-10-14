@@ -13,7 +13,7 @@ Lib.Popout {
     edge: "left"
     expandedWidth: 200
     expandedHeight: 200
-    openDuration: 560
+    openDuration: 600
 
     expandedX: leftThickness
     expandedY: verticalThickness

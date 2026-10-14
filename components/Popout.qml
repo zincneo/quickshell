@@ -27,6 +27,7 @@ Item {
     required property Item blobLayer
     required property BlobGroup group
     required property Item overlayLayer
+    property QtObject manager: null
 
     property string edge: "left"
 
@@ -38,7 +39,7 @@ Item {
 
     property real cornerRadius: 18
     property real overlap: 8          // how far the blob sinks into the fused border
-    property real openDuration: 260
+    property real openDuration: 600
     property real deformScale: 0      // 0 = no jelly (avoids edge detachment)
 
     // Hover trigger zone (window coordinates) that opens the panel.
@@ -52,11 +53,27 @@ Item {
     property bool triggerActive: false
     property bool active: false
     readonly property bool hovered: triggerHover.hovered || panelHover.hovered
-    readonly property bool open: active || (hoverEnabled && (hovered || triggerActive))
+    readonly property bool requestedOpen: active || (hoverEnabled && (hovered || triggerActive))
+    readonly property bool open: requestedOpen && (!manager || (manager.currentPanel === root && !manager.closing && !manager.blocked))
     property real expand: open ? 1 : 0
+    readonly property bool fullyClosed: expand === 0 && !expandAnimation.running
+
+    onRequestedOpenChanged: {
+        if (manager)
+            Qt.callLater(manager.update, root);
+    }
+    onFullyClosedChanged: {
+        if (manager && fullyClosed)
+            Qt.callLater(manager.update, root);
+    }
+    Component.onCompleted: {
+        if (manager)
+            Qt.callLater(manager.update, root);
+    }
 
     Behavior on expand {
         NumberAnimation {
+            id: expandAnimation
             duration: root.openDuration
             easing.type: Easing.OutCubic
         }

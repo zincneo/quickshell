@@ -13,7 +13,7 @@ Lib.Popout {
     edge: "bottom"
     expandedWidth: 280
     expandedHeight: 190
-    openDuration: 440
+    openDuration: 600
 
     expandedX: (screenWidth - expandedWidth) * 0.66
     expandedY: screenHeight - verticalThickness - expandedHeight

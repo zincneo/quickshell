@@ -25,15 +25,17 @@ Rectangle {
     implicitWidth: 32
     implicitHeight: Math.min(maxHeight, workspaceColumn.implicitHeight + 16)
     radius: width / 2
-    color: root.expanded ? "transparent" : root.palette.surface0
+    color: root.palette.surface0
+    opacity: expanded ? 0 : 1
+    Behavior on opacity {
+        NumberAnimation { duration: 400; easing.type: Easing.InOutCubic }
+    }
     visible: allWorkspaces.length > 0
 
     Flickable {
         id: scroll
         anchors.fill: parent
         anchors.margins: 4
-        // Opacity keeps the measured layout and trigger region unchanged.
-        opacity: root.expanded ? 0 : 1
         enabled: !root.expanded
         contentWidth: width
         contentHeight: workspaceColumn.implicitHeight + 8

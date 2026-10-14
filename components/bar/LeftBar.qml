@@ -10,11 +10,16 @@ Item {
     property string outputName: ""
     property bool powerOpen: false
     property bool workspacesOpen: false
+    property bool statusOpen: false
     readonly property bool powerHovered: powerButton.hovered
+    readonly property rect powerZone: Qt.rect(root.x, root.y + sidebarLayout.y + powerButton.y, root.width, powerButton.height)
     readonly property bool workspacesHovered: workspaceGroup.hovered
+    readonly property bool statusHovered: statusGroup.hovered
+    readonly property int statusTab: statusGroup.hoveredTab
     readonly property int hoveredWorkspaceId: workspaceGroup.hoveredWorkspaceId
     readonly property var workspaces: workspaceGroup.allWorkspaces
     readonly property rect workspaceZone: Qt.rect(root.x, root.y + sidebarLayout.y + workspaceGroup.y, root.width, workspaceGroup.height)
+    readonly property rect statusZone: Qt.rect(root.x, root.y + sidebarLayout.y + statusGroup.y, root.width, statusGroup.height)
 
     ColumnLayout {
         id: sidebarLayout
@@ -61,13 +66,16 @@ Item {
         }
 
         StatusIcons {
+            id: statusGroup
             Layout.alignment: Qt.AlignHCenter
             palette: root.palette
+            expanded: root.statusOpen
         }
 
         Power {
             id: powerButton
             Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: 6
             palette: root.palette
             expanded: root.powerOpen
         }

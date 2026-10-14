@@ -11,6 +11,7 @@ C.Popout {
     required property real screenHeight
     required property real leftThickness
     required property real verticalThickness
+    required property rect buttonZone
     property bool confirmationOpen: false
     property bool buttonHovered: false
     signal actionRequested(string selectedAction)
@@ -23,7 +24,7 @@ C.Popout {
     cornerRadius: 24
     hoverEnabled: !confirmationOpen
     triggerActive: buttonHovered
-    triggerZone: Qt.rect(0, screenHeight - verticalThickness - 48, leftThickness, 48)
+    triggerZone: buttonZone
 
     readonly property var actions: [
         { icon: "restart_alt", action: "restart", color: root.palette.peach },

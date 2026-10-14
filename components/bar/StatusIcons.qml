@@ -10,18 +10,23 @@ import "../../services" as Svc
 Rectangle {
     id: root
     required property var palette
+    property bool expanded: false
+    property int hoveredTab: 0
+    readonly property bool hovered: hoverArea.containsMouse
 
     implicitWidth: 32
     implicitHeight: col.implicitHeight + 16
     radius: 16
     color: palette.surface0
+    opacity: expanded ? 0 : 1
+    Behavior on opacity {
+        NumberAnimation { duration: 400; easing.type: Easing.InOutCubic }
+    }
 
     readonly property string audioIcon: {
         if (Svc.Audio.muted || Svc.Audio.volume <= 0)
             return "volume_off";
-        if (Svc.Audio.volume < 0.5)
-            return "volume_down";
-        return "volume_up";
+        return "speaker";
     }
 
     readonly property var battery: UPower.displayDevice
@@ -46,23 +51,21 @@ Rectangle {
     ColumnLayout {
         id: col
         anchors.centerIn: parent
+        enabled: !root.expanded
         spacing: 10
 
         C.MaterialIcon {
+            id: audioGlyph
             Layout.alignment: Qt.AlignHCenter
             text: root.audioIcon
             size: 20
+            weight: 600
             color: Svc.Audio.muted ? root.palette.overlay0 : root.palette.text
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: Svc.Audio.toggleMute()
-                onWheel: wheel => Svc.Audio.changeVolume(wheel.angleDelta.y > 0 ? 0.05 : -0.05)
-            }
         }
 
         C.MaterialIcon {
+            id: networkGlyph
             Layout.alignment: Qt.AlignHCenter
             text: Svc.Network.icon
             size: 20
@@ -70,6 +73,7 @@ Rectangle {
         }
 
         C.MaterialIcon {
+            id: bluetoothGlyph
             Layout.alignment: Qt.AlignHCenter
             text: Svc.Bluetooth.icon
             size: 20
@@ -89,5 +93,27 @@ Rectangle {
                 return root.palette.text;
             }
         }
+    }
+
+    MouseArea {
+        id: hoverArea
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.NoButton
+        cursorShape: Qt.PointingHandCursor
+
+        function updateTab(): void {
+            const icons = [audioGlyph, networkGlyph, bluetoothGlyph];
+            for (let i = 0; i < icons.length; ++i) {
+                const point = icons[i].mapFromItem(root, mouseX, mouseY);
+                if (point.y >= -5 && point.y < icons[i].height + 5) {
+                    root.hoveredTab = i;
+                    return;
+                }
+            }
+        }
+
+        onEntered: updateTab()
+        onPositionChanged: updateTab()
     }
 }

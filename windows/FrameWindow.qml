@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell.Wayland
 import Blobs
+import "../components" as Components
 import "../themes" as Themes
 import "../components/dashboard" as Dashboard
 import "../components/bar" as Bar
@@ -16,6 +17,12 @@ PanelWindow {
     readonly property real verticalThickness: 12
     readonly property real innerRounding: 12
     readonly property var palette: Themes.Macchiato
+
+    Components.PopoutManager {
+        id: popoutManager
+        panels: [dashboard, workspaceMenu, statusMenu, powerMenu]
+        blocked: powerConfirmation.visible
+    }
 
     anchors {
         left: true
@@ -63,6 +70,20 @@ PanelWindow {
             y: workspaceMenu.py
             width: workspaceMenu.gw
             height: workspaceMenu.gh
+        }
+
+        Region {
+            x: statusMenu.px
+            y: statusMenu.py
+            width: statusMenu.gw
+            height: statusMenu.gh
+        }
+
+        Region {
+            x: statusMenu.devicePickerRect.x
+            y: statusMenu.devicePickerRect.y
+            width: statusMenu.devicePickerRect.width
+            height: statusMenu.devicePickerRect.height
         }
     }
 
@@ -124,6 +145,7 @@ PanelWindow {
     // Top-center dropdown dashboard (hover the top border, center).
     Dashboard.Dashboard {
         id: dashboard
+        manager: popoutManager
 
         blobLayer: blobLayer
         group: blobGroup
@@ -139,6 +161,7 @@ PanelWindow {
 
     Bar.WorkspaceMenu {
         id: workspaceMenu
+        manager: popoutManager
         blobLayer: blobLayer
         group: blobGroup
         overlayLayer: overlayLayer
@@ -155,8 +178,27 @@ PanelWindow {
         blocked: powerConfirmation.visible
     }
 
+    Bar.StatusMenu {
+        id: statusMenu
+        manager: popoutManager
+        blobLayer: blobLayer
+        group: blobGroup
+        overlayLayer: overlayLayer
+        palette: frameWindow.palette
+        screenWidth: frameWindow.width
+        screenHeight: frameWindow.height
+        leftThickness: frameWindow.leftThickness
+        rightThickness: frameWindow.rightThickness
+        verticalThickness: frameWindow.verticalThickness
+        statusZone: leftBar.statusZone
+        buttonHovered: leftBar.statusHovered
+        requestedTab: leftBar.statusTab
+        blocked: powerConfirmation.visible
+    }
+
     Bar.PowerMenu {
         id: powerMenu
+        manager: popoutManager
         blobLayer: blobLayer
         group: blobGroup
         overlayLayer: overlayLayer
@@ -165,6 +207,7 @@ PanelWindow {
         leftThickness: frameWindow.leftThickness
         verticalThickness: frameWindow.verticalThickness
         confirmationOpen: powerConfirmation.visible
+        buttonZone: leftBar.powerZone
         buttonHovered: leftBar.powerHovered
         onActionRequested: selectedAction => powerConfirmation.action = selectedAction
     }
@@ -183,6 +226,7 @@ PanelWindow {
         outputName: frameWindow.screen?.name ?? ""
         powerOpen: powerMenu.open
         workspacesOpen: workspaceMenu.open
+        statusOpen: statusMenu.open
     }
 
     Bar.PowerConfirmation {
