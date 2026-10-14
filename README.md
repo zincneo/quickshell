@@ -9,9 +9,10 @@ QML 插件（SDF "metaball" 渲染），用于让面板从窗口边框**无缝�
 | --- | --- |
 | `shell.qml` | Quickshell 入口 |
 | `windows/`, `components/`, `themes/` | QML 界面代码 |
-| `codes/` | 插件 **源码**：`codes/Blobs/`（C++ + 着色器）、`codes/CMakeLists.txt` |
-| `codes/build/` | CMake 构建中间产物（**gitignore**） |
-| `plugin/Blobs/` | `just build` 生成的**插件产物**：`qmldir` + `.so` + `.qmltypes`（**gitignore**） |
+| `codes/` | 插件 **源码**：每个插件一个子目录 `codes/<Name>/`（含各自的 `CMakeLists.txt`）。现有 `codes/Blobs/`（边框融合）、`codes/M3Shapes/`（Material 形状，移植自 soramanew/m3shapes） |
+| `codes/<Name>/build/` | CMake 构建中间产物（**gitignore**） |
+| `plugin/<Name>/` | `just build` 生成的**插件产物**：`qmldir` + `.so` + `.qmltypes`（**gitignore**） |
+| `services/` | QML 单例服务：`Time`/`SysInfo`/`SysUsage`/`Weather` |
 | `justfile` | 构建任务 |
 | `flake.nix` | 提供构建工具链的 `nix develop` 环境 |
 | `caelestia-ref/` | 参考仓库，不追踪（**gitignore**） |
@@ -86,6 +87,48 @@ Popout {
 | `BottomRightLeft.qml` | 右下角 | 向左 |
 | `RightLeft.qml` | 右边 | 向左 |
 | `RightTopDown.qml` | 右上角 | 向下 |
+
+## 顶部下拉 Dashboard
+
+`components/dashboard/Dashboard.qml` 是顶部正中的下拉面板（基于 `Popout` edge="top"，
+从顶边融合下拉），布局参考 caelestia 的 dashboard（标签栏 + 内容）。当前实现了
+**Dashboard 标签**（大时钟 + 月历 `CalendarView.qml`），主题用我们自己的 Macchiato；
+Media / Performance / Weather 为占位，待接入对应服务后补齐。
+
+### 完整对齐 caelestia 还需安装的依赖（NixOS）
+
+> 这些是 caelestia 运行期依赖/字体，按需在系统配置里安装；没有也不影响当前的
+> 时钟+月历（它们只用 Nerd Font，纯 QML）。
+
+字体（最影响观感，用于图标与排版）：
+
+```nix
+fonts.packages = with pkgs; [
+  material-symbols            # 图标（MaterialIcon）
+  rubik                       # UI 字体
+  nerd-fonts.caskaydia-cove   # 等宽（或继续用现有的 Iosevka Nerd Font）
+];
+```
+
+各标签内容所需的运行期程序/服务：
+
+| 标签/部件 | 依赖 | 现状 |
+| --- | --- | --- |
+| Dashboard·Weather | `curl` + 网络（wttr.in） | ✅ 已接 |
+| Dashboard·User | `/etc/os-release`、`/proc/uptime`、`XDG_CURRENT_DESKTOP` | ✅ 已接 |
+| Dashboard·Resources | `/proc/stat`、`/proc/meminfo`、`df` | ✅ 已接 |
+| Dashboard·Media（右侧播放器） | **任一 MPRIS 播放器**在运行（`spotify`/`mpv`(带 mpris)/浏览器/`playerctl` 兼容应用） | ✅ 已接（无播放器则显示 No media） |
+| 头像 | `~/.face` 图片 | 放一张即可 |
+| Media 节拍可视化（bongocat） | `cava`、`aubio`、`pipewire` | ⬜ 待接 |
+| Performance/Workspaces 标签 | 待实现 | ⬜ |
+
+> **音乐播放器（右侧面板）**：用的是 Quickshell 内置的 `Quickshell.Services.Mpris`，
+> **不需要额外安装包**，但需要有一个正在运行的 MPRIS 播放器才能显示（封面/标题/
+> 上一首·播放·下一首）。例如安装并运行 `spotify`，或 `mpv --idle`（它自带 MPRIS），
+> 或任意支持 MPRIS 的浏览器/音乐软件。可选装 `playerctl` 便于调试。
+
+> 注：caelestia 的精确 Material 形状（头像 Pill、今天指示器等）来自其 `M3Shapes`
+> C++ 插件；如需完全一致，可像 `Blobs` 一样把它单独编译进来（告诉我即可）。
 
 ## 许可
 

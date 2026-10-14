@@ -3,8 +3,6 @@
 # Reference clone of caelestia-dots/shell (effect/window-content reference only; untracked)
 /caelestia-ref/
 
-# CMake build intermediates for the Blobs plugin (sources live in codes/)
-/codes/build/
-
-# Generated plugin output (produced by `just build`)
-# /plugin/
+# CMake build intermediates for the plugins (sources live in codes/<Name>/)
+/codes/*/build/
+**/build

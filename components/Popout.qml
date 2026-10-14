@@ -48,7 +48,7 @@ Item {
     default property alias content: contentInner.data
 
     readonly property bool horizontal: edge === "left" || edge === "right"
-    readonly property bool open: trigger.containsMouse || panelHover.containsMouse
+    readonly property bool open: triggerHover.hovered || panelHover.hovered
     property real expand: open ? 1 : 0
 
     Behavior on expand {
@@ -98,6 +98,13 @@ Item {
             matrix: blob.deformMatrix
         }
 
+        // Keeps the popout open while hovering its content. A HoverHandler is
+        // passive, so child items (buttons, lists) still receive their own hover.
+        HoverHandler {
+            id: panelHover
+            enabled: root.expand > 0.01
+        }
+
         Item {
             id: contentInner
             x: root.expandedX - root.px
@@ -107,26 +114,16 @@ Item {
         }
     }
 
-    readonly property MouseArea triggerItem: MouseArea {
-        id: trigger
+    // Border trigger hover (HoverHandler, passive).
+    readonly property Item triggerItem: Item {
         parent: root
         x: root.triggerZone.x
         y: root.triggerZone.y
         width: root.triggerZone.width
         height: root.triggerZone.height
-        hoverEnabled: true
-        acceptedButtons: Qt.NoButton
-    }
 
-    readonly property MouseArea panelHoverItem: MouseArea {
-        id: panelHover
-        parent: root
-        x: root.px
-        y: root.py
-        width: root.gw
-        height: root.gh
-        hoverEnabled: true
-        enabled: root.expand > 0.01
-        acceptedButtons: Qt.NoButton
+        HoverHandler {
+            id: triggerHover
+        }
     }
 }

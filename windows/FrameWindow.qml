@@ -5,7 +5,7 @@ import Quickshell.Wayland
 import Blobs
 import "../themes" as Themes
 import "../components" as Components
-import "../components/PopoutDemo" as Demos
+import "../components/dashboard" as Dashboard
 
 PanelWindow {
     id: frameWindow
@@ -43,54 +43,12 @@ PanelWindow {
             intersection: Intersection.Subtract
         }
 
-        // Re-add each popout's current area so hovering it keeps it open.
+        // Re-add the dashboard's current area so it stays interactive when open.
         Region {
-            x: topDown.px
-            y: topDown.py
-            width: topDown.gw
-            height: topDown.gh
-        }
-        Region {
-            x: topLeftRight.px
-            y: topLeftRight.py
-            width: topLeftRight.gw
-            height: topLeftRight.gh
-        }
-        Region {
-            x: leftRight.px
-            y: leftRight.py
-            width: leftRight.gw
-            height: leftRight.gh
-        }
-        Region {
-            x: leftBottomRight.px
-            y: leftBottomRight.py
-            width: leftBottomRight.gw
-            height: leftBottomRight.gh
-        }
-        Region {
-            x: bottomUp.px
-            y: bottomUp.py
-            width: bottomUp.gw
-            height: bottomUp.gh
-        }
-        Region {
-            x: bottomRightLeft.px
-            y: bottomRightLeft.py
-            width: bottomRightLeft.gw
-            height: bottomRightLeft.gh
-        }
-        Region {
-            x: rightLeft.px
-            y: rightLeft.py
-            width: rightLeft.gw
-            height: rightLeft.gh
-        }
-        Region {
-            x: rightTopDown.px
-            y: rightTopDown.py
-            width: rightTopDown.gw
-            height: rightTopDown.gh
+            x: dashboard.px
+            y: dashboard.py
+            width: dashboard.gw
+            height: dashboard.gh
         }
     }
 
@@ -106,9 +64,6 @@ PanelWindow {
             smoothing: 32
         }
 
-        // The frame: fills the border band and cuts a rounded hole in the
-        // middle. Extended 50px beyond the window so the outer edge stays off
-        // screen and the fill reaches the window edges cleanly.
         BlobInvertedRect {
             anchors.fill: parent
             anchors.margins: -50
@@ -152,90 +107,15 @@ PanelWindow {
         anchors.fill: parent
     }
 
-    // --- Demo popouts: one per fusion/direction scenario. Content is empty;
-    // they only demonstrate how to place and expand a popout. Remove in real use.
-    Demos.TopDown {
-        id: topDown
+    // Top-center dropdown dashboard (hover the top border, center).
+    Dashboard.Dashboard {
+        id: dashboard
+
         blobLayer: blobLayer
         group: blobGroup
         overlayLayer: overlayLayer
-        screenWidth: frameWindow.width
-        screenHeight: frameWindow.height
-        leftThickness: frameWindow.leftThickness
-        rightThickness: frameWindow.rightThickness
-        verticalThickness: frameWindow.verticalThickness
-    }
-    Demos.TopLeftRight {
-        id: topLeftRight
-        blobLayer: blobLayer
-        group: blobGroup
-        overlayLayer: overlayLayer
-        screenWidth: frameWindow.width
-        screenHeight: frameWindow.height
-        leftThickness: frameWindow.leftThickness
-        rightThickness: frameWindow.rightThickness
-        verticalThickness: frameWindow.verticalThickness
-    }
-    Demos.LeftRight {
-        id: leftRight
-        blobLayer: blobLayer
-        group: blobGroup
-        overlayLayer: overlayLayer
-        screenWidth: frameWindow.width
-        screenHeight: frameWindow.height
-        leftThickness: frameWindow.leftThickness
-        rightThickness: frameWindow.rightThickness
-        verticalThickness: frameWindow.verticalThickness
-    }
-    Demos.LeftBottomRight {
-        id: leftBottomRight
-        blobLayer: blobLayer
-        group: blobGroup
-        overlayLayer: overlayLayer
-        screenWidth: frameWindow.width
-        screenHeight: frameWindow.height
-        leftThickness: frameWindow.leftThickness
-        rightThickness: frameWindow.rightThickness
-        verticalThickness: frameWindow.verticalThickness
-    }
-    Demos.BottomUp {
-        id: bottomUp
-        blobLayer: blobLayer
-        group: blobGroup
-        overlayLayer: overlayLayer
-        screenWidth: frameWindow.width
-        screenHeight: frameWindow.height
-        leftThickness: frameWindow.leftThickness
-        rightThickness: frameWindow.rightThickness
-        verticalThickness: frameWindow.verticalThickness
-    }
-    Demos.BottomRightLeft {
-        id: bottomRightLeft
-        blobLayer: blobLayer
-        group: blobGroup
-        overlayLayer: overlayLayer
-        screenWidth: frameWindow.width
-        screenHeight: frameWindow.height
-        leftThickness: frameWindow.leftThickness
-        rightThickness: frameWindow.rightThickness
-        verticalThickness: frameWindow.verticalThickness
-    }
-    Demos.RightLeft {
-        id: rightLeft
-        blobLayer: blobLayer
-        group: blobGroup
-        overlayLayer: overlayLayer
-        screenWidth: frameWindow.width
-        screenHeight: frameWindow.height
-        leftThickness: frameWindow.leftThickness
-        rightThickness: frameWindow.rightThickness
-        verticalThickness: frameWindow.verticalThickness
-    }
-    Demos.RightTopDown {
-        id: rightTopDown
-        blobLayer: blobLayer
-        group: blobGroup
-        overlayLayer: overlayLayer
+        palette: frameWindow.palette
+
         screenWidth: frameWindow.width
         screenHeight: frameWindow.height
         leftThickness: frameWindow.leftThickness
