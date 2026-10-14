@@ -1,0 +1,8 @@
+module Blobs
+linktarget blobsplugin
+optional plugin blobsplugin
+classname BlobsPlugin
+typeinfo blobs.qmltypes
+prefer :/qt/qml/Blobs/
+depends QtQuick
+
