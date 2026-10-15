@@ -18,6 +18,19 @@ Singleton {
             })).sort((a, b) => a.output === b.output ? a.idx - b.idx : String(a.output).localeCompare(String(b.output)))
     readonly property var focusedWindow: windows.find(w => w.isFocused) ?? null
 
+    // Windows on a workspace in layout order (column, then tile); floating windows last.
+    function windowsOn(wsId: int): var {
+        return windows.filter(w => w.workspaceId === wsId).sort((a, b) => {
+            if (!a.pos && !b.pos)
+                return a.id - b.id;
+            if (!a.pos)
+                return 1;
+            if (!b.pos)
+                return -1;
+            return a.pos[0] - b.pos[0] || a.pos[1] - b.pos[1];
+        });
+    }
+
     function switchTo(idx: int): void {
         Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", String(idx)]);
     }
@@ -43,7 +56,8 @@ Singleton {
             appId: w.app_id ?? "",
             title: w.title ?? "",
             workspaceId: w.workspace_id ?? -1,
-            isFocused: w.is_focused ?? false
+            isFocused: w.is_focused ?? false,
+            pos: w.layout?.pos_in_scrolling_layout ?? null
         };
     }
 

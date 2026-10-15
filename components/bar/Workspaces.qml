@@ -18,9 +18,9 @@ Rectangle {
         const local = Svc.Niri.wsList.filter(w => w.output === outputName);
         return local.length ? local : Svc.Niri.wsList;
     }
-    readonly property int currentIndex: Math.max(0, allWorkspaces.findIndex(w => w.id === Svc.Niri.focusedId || w.isActive));
-    readonly property int groupStart: Math.floor(currentIndex / 5) * 5
-    readonly property var shownWorkspaces: allWorkspaces.slice(groupStart, groupStart + 5)
+    readonly property int currentIndex: Math.max(0, allWorkspaces.findIndex(w => w.id === Svc.Niri.focusedId || w.isActive))
+    readonly property int shownStart: Math.max(0, Math.min(currentIndex - 1, allWorkspaces.length - 3))
+    readonly property var shownWorkspaces: allWorkspaces.slice(shownStart, shownStart + 3)
 
     implicitWidth: 32
     implicitHeight: Math.min(maxHeight, workspaceColumn.implicitHeight + 16)
@@ -35,7 +35,8 @@ Rectangle {
     Flickable {
         id: scroll
         anchors.fill: parent
-        anchors.margins: 4
+        anchors.topMargin: 4
+        anchors.bottomMargin: 4
         enabled: !root.expanded
         contentWidth: width
         contentHeight: workspaceColumn.implicitHeight + 8
@@ -58,27 +59,23 @@ Rectangle {
                     id: workspace
                     required property var modelData
                     readonly property bool current: modelData.id === Svc.Niri.focusedId || modelData.isActive
-                    readonly property var windows: Svc.Niri.windows.filter(w => w.workspaceId === modelData.id)
+                    readonly property var windows: Svc.Niri.windowsOn(modelData.id)
+                    readonly property int focusIndex: windows.findIndex(w => w.isFocused)
+                    readonly property int windowStart: Math.max(0, Math.min(focusIndex - 2, windows.length - 5))
+                    readonly property var shownWindows: current && focusIndex >= 0 ? windows.slice(windowStart, windowStart + 5) : []
                     Layout.fillWidth: true
-                    spacing: 4
+                    spacing: 8
 
                     Item {
                         Layout.fillWidth: true
-                        implicitHeight: 28
+                        implicitHeight: 26
 
                         Rectangle {
                             anchors.centerIn: parent
-                            width: workspace.current ? 26 : 8
+                            width: 8
                             height: width
-                            radius: workspace.current || !workspace.windows.length ? width / 2 : 2
-                            color: workspace.current ? root.palette.mauve : (workspace.windows.length ? root.palette.subtext0 : root.palette.surface2)
-                            C.MaterialIcon {
-                                anchors.centerIn: parent
-                                visible: workspace.current
-                                text: "adjust"
-                                size: 20
-                                color: root.palette.base
-                            }
+                            radius: width / 2
+                            color: workspace.current ? root.palette.lavender : root.palette.surface2
                         }
 
                         MouseArea {
@@ -91,50 +88,16 @@ Rectangle {
                     }
 
                     Repeater {
-                        model: workspace.windows.slice(0, 5)
-                        delegate: Item {
-                            id: windowIcon
-                            required property var modelData
-                            readonly property var entry: modelData.appId ? DesktopEntries.heuristicLookup(modelData.appId) : null
+                        model: workspace.shownWindows
+
+                        delegate: WorkspaceAppIcon {
                             Layout.alignment: Qt.AlignHCenter
-                            implicitWidth: 24
-                            implicitHeight: 24
-
-                            Image {
-                                id: appImage
-                                anchors.centerIn: parent
-                                width: 22
-                                height: 22
-                                source: windowIcon.modelData.appId ? Quickshell.iconPath(windowIcon.entry?.icon || windowIcon.modelData.appId, "application-x-executable") : ""
-                                sourceSize.width: 44
-                                sourceSize.height: 44
-                                fillMode: Image.PreserveAspectFit
-                                visible: status === Image.Ready
-                            }
-                            C.MaterialIcon {
-                                anchors.centerIn: parent
-                                visible: !appImage.visible
-                                text: "web_asset"
-                                size: 22
-                                color: root.palette.subtext0
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onEntered: root.hoveredWorkspaceId = workspace.modelData.id
-                                onClicked: Svc.Niri.focusWindow(windowIcon.modelData.id)
-                            }
+                            required property var modelData
+                            windowData: modelData
+                            palette: root.palette
+                            fallbackColor: modelData.isFocused ? root.palette.lavender : root.palette.subtext0
+                            glow: modelData.isFocused
                         }
-                    }
-
-                    Text {
-                        Layout.alignment: Qt.AlignHCenter
-                        visible: workspace.windows.length > 5
-                        text: "+" + (workspace.windows.length - 5)
-                        font.family: "Rubik"
-                        font.pixelSize: 11
-                        color: root.palette.subtext0
                     }
                 }
             }
