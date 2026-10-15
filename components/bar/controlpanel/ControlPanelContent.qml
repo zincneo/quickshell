@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import ".." as Bar
 import "../../dashboard" as D
 
-// Contents of the bottom-logo panel, stacked top to bottom:
+// Contents of the left control panel, stacked top to bottom:
 // workspaces, date/user, calendar/weather (hidden while a list is open), then the quick panel.
 ColumnLayout {
     id: root

@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 
 // The left vertical bar, mirroring caelestia's entry order:
-// logo, workspaces, [spacer], activeWindow, [spacer], tray, clock, statusIcons, power.
+// workspaces, [spacer], activeWindow, [spacer], tray, clock, statusIcons, power.
 Item {
     id: root
 
@@ -11,8 +11,8 @@ Item {
     property bool powerOpen: false
     property bool workspacesOpen: false
     property bool statusOpen: false
-    property bool logoPanelOpen: false
-    readonly property real contentOpacity: logoPanelOpen ? 0 : 1
+    property bool controlPanelOpen: false
+    readonly property real contentOpacity: controlPanelOpen ? 0 : 1
     readonly property bool powerHovered: powerButton.hovered
     readonly property rect powerZone: Qt.rect(root.x, root.y + sidebarLayout.y + powerButton.y, root.width, powerButton.height)
     readonly property bool workspacesHovered: workspaceGroup.hovered
@@ -77,14 +77,6 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             palette: root.palette
             expanded: root.statusOpen
-        }
-
-        OsIcon {
-            opacity: root.contentOpacity
-            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutCubic } }
-            Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: 6
-            palette: root.palette
         }
 
         Power {

@@ -2,9 +2,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import ".." as C
-import "logo" as Logo
+import "controlpanel" as Panel
 
-// Left-edge panel toggled through IPC (Super+1). It grows out of the left
+// Left-edge control panel toggled through IPC (Super+1). It grows out of the left
 // border and is fused to the top and bottom borders.
 C.Popout {
     id: root
@@ -26,7 +26,7 @@ C.Popout {
     expandedHeight: screenHeight - verticalThickness * 2
     contentOverhang: leftThickness
     openDuration: 600
-    closeDuration: 800
+    closeDuration: 600
     contentFadeDuration: 400
     closeEasing: Easing.Linear
     openEasing: Easing.OutBack
@@ -37,7 +37,7 @@ C.Popout {
         opened = !opened;
     }
 
-    Logo.LogoPanelContent {
+    Panel.ControlPanelContent {
         id: panelContent
         palette: root.palette
         leftThickness: root.leftThickness

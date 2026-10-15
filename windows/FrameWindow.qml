@@ -21,7 +21,7 @@ PanelWindow {
 
     Components.PopoutManager {
         id: popoutManager
-        panels: [dashboard, workspaceMenu, statusMenu, powerMenu, logoPanel]
+        panels: [dashboard, workspaceMenu, statusMenu, powerMenu, controlPanel]
         blocked: powerConfirmation.visible
     }
 
@@ -60,10 +60,10 @@ PanelWindow {
         }
 
         Region {
-            x: logoPanel.px
-            y: logoPanel.py
-            width: logoPanel.expand > 0.001 ? logoPanel.gw : 0
-            height: logoPanel.expand > 0.001 ? logoPanel.gh : 0
+            x: controlPanel.px
+            y: controlPanel.py
+            width: controlPanel.expand > 0.001 ? controlPanel.gw : 0
+            height: controlPanel.expand > 0.001 ? controlPanel.gh : 0
         }
 
         Region {
@@ -221,8 +221,8 @@ PanelWindow {
         onActionRequested: selectedAction => powerConfirmation.action = selectedAction
     }
 
-    Bar.LogoPanel {
-        id: logoPanel
+    Bar.ControlPanel {
+        id: controlPanel
         manager: popoutManager
         blobLayer: blobLayer
         group: blobGroup
@@ -238,10 +238,10 @@ PanelWindow {
     }
 
     IpcHandler {
-        target: "logo"
+        target: "controlPanel"
 
         function toggle(): void {
-            logoPanel.toggle();
+            controlPanel.toggle();
         }
     }
 
@@ -260,7 +260,7 @@ PanelWindow {
         powerOpen: powerMenu.open
         workspacesOpen: workspaceMenu.open
         statusOpen: statusMenu.open
-        logoPanelOpen: logoPanel.open
+        controlPanelOpen: controlPanel.open
     }
 
     Bar.PowerConfirmation {

@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// Rounded surface shared by every card in the logo panel.
+// Rounded surface shared by every card in the control panel.
 Rectangle {
     required property var palette
 

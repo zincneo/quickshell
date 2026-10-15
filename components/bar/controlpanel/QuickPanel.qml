@@ -5,7 +5,7 @@ import ".." as Bar
 import "../../dashboard" as D
 import "../../../services" as Svc
 
-// Tabbed card at the bottom of the logo panel: one content page per tab,
+// Tabbed card at the bottom of the control panel: one content page per tab,
 // switched with the tab bar.
 PanelCard {
     id: root
