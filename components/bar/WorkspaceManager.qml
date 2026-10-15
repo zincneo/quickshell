@@ -85,6 +85,7 @@ ColumnLayout {
                         property real strength: 1.0
                         property real warp: 0.35
                         property vector2d texelSize: Qt.vector2d(1 / chipContent.width, 1 / chipContent.height)
+                        property color haloTint: root.palette.haloTint
                         fragmentShader: Qt.resolvedUrl("shaders/glow.frag.qsb")
 
                         NumberAnimation on time {
@@ -219,6 +220,7 @@ ColumnLayout {
                         property real strength: 1.0
                         property real warp: 0.35
                         property vector2d texelSize: Qt.vector2d(1 / rowContent.width, 1 / rowContent.height)
+                        property color haloTint: root.palette.haloTint
                         fragmentShader: Qt.resolvedUrl("shaders/glow.frag.qsb")
 
                         NumberAnimation on time {

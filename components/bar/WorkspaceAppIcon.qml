@@ -36,6 +36,7 @@ Item {
             property real strength: 1.0
             property real warp: 0.35
             property vector2d texelSize: Qt.vector2d(1 / content.width, 1 / content.height)
+            property color haloTint: root.palette.haloTint
             fragmentShader: Qt.resolvedUrl("shaders/glow.frag.qsb")
 
             NumberAnimation on time {

@@ -28,4 +28,8 @@ QtObject {
     readonly property color base: "#24273a"
     readonly property color mantle: "#1e2030"
     readonly property color crust: "#181926"
+    readonly property color haloTint: "#FFFFFF"
+    readonly property color shadowDark: "#000000"
+    readonly property color shadowLight: "#000000"
+    readonly property real shadowOpacity: 0.2
 }

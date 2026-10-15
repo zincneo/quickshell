@@ -92,7 +92,7 @@ Popout {
 
 `components/dashboard/Dashboard.qml` 是顶部正中的下拉面板（基于 `Popout` edge="top"，
 从顶边融合下拉），布局参考 caelestia 的 dashboard（标签栏 + 内容）。当前实现了
-**Dashboard 标签**（大时钟 + 月历 `CalendarView.qml`），主题用我们自己的 Macchiato；
+**Dashboard 标签**（大时钟 + 月历 `CalendarView.qml`），主题用我们自己的 Dark 配色（themes/Dark.qml）；
 Media / Performance / Weather 为占位，待接入对应服务后补齐。
 
 ### 完整对齐 caelestia 还需安装的依赖（NixOS）

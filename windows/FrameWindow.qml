@@ -16,7 +16,7 @@ PanelWindow {
     readonly property real rightThickness: 12
     readonly property real verticalThickness: 12
     readonly property real innerRounding: 12
-    readonly property var palette: Themes.Macchiato
+    readonly property var palette: Themes.ThemeManager.current
 
     Components.PopoutManager {
         id: popoutManager
@@ -125,8 +125,8 @@ PanelWindow {
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: frameWindow.palette.crust
-        shadowOpacity: 0.55
+        shadowColor: frameWindow.palette.shadowLight
+        shadowOpacity: frameWindow.palette.shadowOpacity
         shadowHorizontalOffset: -10
         shadowVerticalOffset: -10
     }
@@ -137,8 +137,8 @@ PanelWindow {
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: frameWindow.palette.crust
-        shadowOpacity: 0.55
+        shadowColor: frameWindow.palette.shadowDark
+        shadowOpacity: frameWindow.palette.shadowOpacity
         shadowHorizontalOffset: 10
         shadowVerticalOffset: 10
     }

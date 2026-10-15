@@ -22,11 +22,9 @@ Item {
     signal clicked()
 
     MouseArea {
+        id: area
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            root.logoIndex = 1 - root.logoIndex;
-            root.clicked();
-        }
+        onClicked: root.clicked()
     }
 }

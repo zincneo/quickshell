@@ -1,1 +1,3 @@
-singleton Macchiato 1.0 Macchiato.qml
+singleton Dark 1.0 Dark.qml
+singleton Light 1.0 Light.qml
+singleton ThemeManager 1.0 ThemeManager.qml

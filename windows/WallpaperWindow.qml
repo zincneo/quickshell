@@ -11,7 +11,7 @@ PanelWindow {
     readonly property real frameRightInset: 12
     readonly property real frameVerticalInset: 12
     readonly property real wallpaperGap: 24
-    readonly property var palette: Themes.Macchiato
+    readonly property var palette: Themes.ThemeManager.current
 
     WlrLayershell.layer: WlrLayer.Bottom
     WlrLayershell.exclusionMode: ExclusionMode.Ignore
@@ -29,39 +29,19 @@ PanelWindow {
     focusable: false
     mask: Region {}
 
-    Image {
-        id: wallpaper
+    Rectangle {
+        anchors.fill: parent
+        color: wallpaperWindow.palette.base
+    }
+
+    Rectangle {
+        id: shadowSurface
         x: wallpaperWindow.frameLeftInset + wallpaperWindow.wallpaperGap
         y: wallpaperWindow.frameVerticalInset + wallpaperWindow.wallpaperGap
         width: wallpaperWindow.width - wallpaperWindow.frameLeftInset
             - wallpaperWindow.frameRightInset - wallpaperWindow.wallpaperGap * 2
         height: wallpaperWindow.height - wallpaperWindow.frameVerticalInset * 2
             - wallpaperWindow.wallpaperGap * 2
-        source: "file:///home/zinc/.wallpaper/sakura.jpg"
-        fillMode: Image.PreserveAspectCrop
-        asynchronous: true
-        visible: false
-    }
-
-    Rectangle {
-        id: roundedMask
-        x: wallpaper.x
-        y: wallpaper.y
-        width: wallpaper.width
-        height: wallpaper.height
-        radius: 12
-        // The mask only uses this item's opacity; a theme color keeps it opaque.
-        color: wallpaperWindow.palette.text
-        visible: false
-        layer.enabled: true
-    }
-
-    Rectangle {
-        id: shadowSurface
-        x: wallpaper.x
-        y: wallpaper.y
-        width: wallpaper.width
-        height: wallpaper.height
         radius: 12
         color: wallpaperWindow.palette.base
         layer.enabled: true
@@ -73,8 +53,8 @@ PanelWindow {
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: wallpaperWindow.palette.crust
-        shadowOpacity: 0.55
+        shadowColor: wallpaperWindow.palette.shadowLight
+        shadowOpacity: wallpaperWindow.palette.shadowOpacity
         shadowHorizontalOffset: -10
         shadowVerticalOffset: -10
     }
@@ -85,16 +65,9 @@ PanelWindow {
         shadowEnabled: true
         shadowBlur: 0.9
         blurMax: 48
-        shadowColor: wallpaperWindow.palette.crust
-        shadowOpacity: 0.55
+        shadowColor: wallpaperWindow.palette.shadowDark
+        shadowOpacity: wallpaperWindow.palette.shadowOpacity
         shadowHorizontalOffset: 10
         shadowVerticalOffset: 10
-    }
-
-    MultiEffect {
-        source: wallpaper
-        anchors.fill: wallpaper
-        maskEnabled: true
-        maskSource: roundedMask
     }
 }

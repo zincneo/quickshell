@@ -2,27 +2,41 @@ import QtQuick
 import QtQuick.Layouts
 import ".." as C
 import "../../services" as Svc
+import "../../themes" as Themes
 
 Item {
     id: root
     required property var palette
     readonly property string font: "Rubik"
 
-    // Avatar logo; click toggles between catppuccin0 and catppuccin1.
-    property alias logoIndex: avatar.logoIndex
-
     RowLayout {
         anchors.fill: parent
         anchors.margins: 12
         spacing: 12
 
-        C.AvatarLogo {
-            id: avatar
+        ColumnLayout {
             Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: 56
-            Layout.preferredHeight: 56
-            Layout.maximumWidth: 56
-            Layout.maximumHeight: 56
+            spacing: 4
+
+            // Click switches the shared colour theme.
+            C.AvatarLogo {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 56
+                Layout.preferredHeight: 56
+                Layout.maximumWidth: 56
+                Layout.maximumHeight: 56
+                logoIndex: Themes.ThemeManager.logoIndex
+                onClicked: Themes.ThemeManager.toggle()
+            }
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: Themes.ThemeManager.light ? "Light" : "Dark"
+                color: root.palette.lavender
+                font.family: root.font
+                font.pixelSize: 12
+                font.weight: Font.Bold
+            }
         }
 
         ColumnLayout {
