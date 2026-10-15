@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import ".." as C
+import "logo" as Logo
 
 // Left-edge panel opened by clicking the bottom logo. It grows out of the left
 // border and is fused to the top and bottom borders. It closes once the pointer
@@ -50,7 +51,7 @@ C.Popout {
         opened = !opened;
     }
 
-    LogoPanelContent {
+    Logo.LogoPanelContent {
         id: panelContent
         palette: root.palette
         leftThickness: root.leftThickness
