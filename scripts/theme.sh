@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
-# Usage: kitty-theme.sh dark|light
-# Points kitty.conf's theme include (line 2) at themes/<mode>.conf and reloads kitty.
+# Usage: theme.sh dark|light
+# Switches kitty, fcitx5 and niri backdrop colours to the given mode.
 set -eu
 
-mode="${1:?usage: kitty-theme.sh dark|light}"
+mode="${1:?usage: theme.sh dark|light}"
 case "$mode" in
     dark|light) ;;
     *) echo "unknown mode: $mode" >&2; exit 1 ;;
@@ -15,6 +15,14 @@ sed -i "2s|^include .*|include themes/${mode}.conf|" "$conf"
 
 # SIGUSR1 makes running kitty instances reload their configuration.
 pkill -USR1 -x kitty || true
+
+# Niri reloads config.kdl automatically when it changes.
+case "$mode" in
+    dark) backdrop=#24273a ;;
+    light) backdrop=#eff1f5 ;;
+esac
+niri_conf="$(readlink -f "${XDG_CONFIG_HOME:-$HOME/.config}/niri/config.kdl")"
+sed -i "s|^\(\s*backdrop-color \)\".*\"|\1\"${backdrop}\"|" "$niri_conf"
 
 # Match fcitx5's candidate-window theme (Theme= line) to the same mode.
 fcitx_conf="${XDG_CONFIG_HOME:-$HOME/.config}/fcitx5/conf/classicui.conf"

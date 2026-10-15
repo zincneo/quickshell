@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 import QtQuick.Effects
 import Quickshell.Wayland
@@ -236,6 +237,14 @@ PanelWindow {
         }
     }
 
+    IpcHandler {
+        target: "logo"
+
+        function toggle(): void {
+            logoPanel.toggle();
+        }
+    }
+
     Bar.LeftBar {
         id: leftBar
         anchors {
@@ -252,7 +261,6 @@ PanelWindow {
         workspacesOpen: workspaceMenu.open
         statusOpen: statusMenu.open
         logoPanelOpen: logoPanel.open
-        onLogoClicked: logoPanel.toggle()
     }
 
     Bar.PowerConfirmation {

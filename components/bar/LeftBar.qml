@@ -12,7 +12,6 @@ Item {
     property bool workspacesOpen: false
     property bool statusOpen: false
     property bool logoPanelOpen: false
-    signal logoClicked()
     readonly property real contentOpacity: logoPanelOpen ? 0 : 1
     readonly property bool powerHovered: powerButton.hovered
     readonly property rect powerZone: Qt.rect(root.x, root.y + sidebarLayout.y + powerButton.y, root.width, powerButton.height)
@@ -86,7 +85,6 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: 6
             palette: root.palette
-            onClicked: root.logoClicked()
         }
 
         Power {

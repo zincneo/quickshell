@@ -18,7 +18,7 @@ QtObject {
 
     // Applies the kitty theme matching the current mode on startup and on every switch.
     function applyKittyTheme(): void {
-        Quickshell.execDetached([Quickshell.shellDir + "/scripts/kitty-theme.sh", root.light ? "light" : "dark"]);
+        Quickshell.execDetached([Quickshell.shellDir + "/scripts/theme.sh", root.light ? "light" : "dark"]);
     }
 
     onLightChanged: applyKittyTheme()

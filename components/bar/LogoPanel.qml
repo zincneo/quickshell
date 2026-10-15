@@ -4,9 +4,8 @@ import QtQuick
 import ".." as C
 import "logo" as Logo
 
-// Left-edge panel opened by clicking the bottom logo. It grows out of the left
-// border and is fused to the top and bottom borders. It closes once the pointer
-// leaves the bar column or the panel.
+// Left-edge panel toggled through IPC (Super+1). It grows out of the left
+// border and is fused to the top and bottom borders.
 C.Popout {
     id: root
 
@@ -32,20 +31,7 @@ C.Popout {
     closeEasing: Easing.Linear
     openEasing: Easing.OutBack
     triggerZone: Qt.rect(0, verticalThickness, leftThickness, screenHeight - verticalThickness * 2)
-
-    // Grace period so brief pointer exits (or a quick re-entry) don't close the panel.
-    Timer {
-        id: closeTimer
-        interval: 600
-        onTriggered: root.opened = false
-    }
-
-    onHoveredChanged: {
-        if (hovered)
-            closeTimer.stop();
-        else if (opened)
-            closeTimer.restart();
-    }
+    hoverEnabled: false
 
     function toggle(): void {
         opened = !opened;
