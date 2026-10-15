@@ -13,7 +13,12 @@ Item {
     property real windowX: 0
     property real windowY: 0
     property bool active: false
+    property real rowSpacing: 16
+    property bool inline: false
     property int selectedPicker: -1
+    readonly property bool pickerOpen: selectedPicker >= 0
+    property real inlineBottomMargin: 8
+    readonly property real controlsTop: controls.y
     readonly property bool outputPicker: selectedPicker === 0
     readonly property var devices: outputPicker ? Svc.Audio.sinks : Svc.Audio.sources
     readonly property var currentDevice: outputPicker ? Svc.Audio.sink : Svc.Audio.source
@@ -35,8 +40,8 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 8
-        spacing: 16
+        anchors.bottomMargin: root.inline ? root.inlineBottomMargin : 4
+        spacing: root.rowSpacing
 
         VolumeControl {
             id: outputControl
@@ -89,14 +94,17 @@ Item {
         parent: root.pickerLayer
         z: 10
         visible: root.active && root.selectedPicker >= 0
-        width: Math.min(480, root.pickerLayer.width - root.windowX - 12)
-        height: Math.min(240, root.windowY + root.pickerAnchor - 20, 58 + Math.max(1, root.devices.length) * 38)
-        x: root.windowX
-        y: Math.max(12, root.windowY + root.pickerAnchor - height - 8)
-        radius: 16
-        color: root.palette.base
-        border.width: 3
+        width: root.inline ? root.pickerLayer.width : Math.min(480, root.pickerLayer.width - root.windowX - 12)
+        height: root.inline ? Math.min(root.pickerLayer.height, 16 + pickerTitle.implicitHeight + Math.min(3, Math.max(1, root.devices.length)) * 38) : Math.min(240, root.windowY + root.pickerAnchor - 20, 58 + Math.max(1, root.devices.length) * 38)
+        x: root.inline ? 0 : root.windowX
+        y: root.inline ? 0 : Math.max(12, root.windowY + root.pickerAnchor - height - 8)
+        radius: root.inline ? 0 : 16
+        clip: root.inline
+        color: root.inline ? "transparent" : root.palette.base
+        border.width: root.inline ? 0 : 3
         border.color: root.palette.lavender
+        opacity: visible ? 1 : 0
+        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
         HoverHandler {
             id: pickerHover
@@ -112,13 +120,16 @@ Item {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 12
+            anchors.topMargin: root.inline ? 8 : 12
+            anchors.bottomMargin: root.inline ? 0 : 12
             spacing: 8
 
             Text {
+                id: pickerTitle
                 Layout.fillWidth: true
                 text: root.outputPicker ? "Output device" : "Input device"
                 font.family: "Rubik"
-                font.pixelSize: 14
+                font.pixelSize: 12
                 font.weight: Font.Medium
                 color: root.palette.text
             }
@@ -173,7 +184,7 @@ Item {
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
                             font.family: "Rubik"
-                            font.pixelSize: 13
+                            font.pixelSize: 11
                             color: device.checked ? root.palette.mauve : root.palette.text
                         }
                         background: Rectangle {
@@ -199,7 +210,7 @@ Item {
         signal muteRequested()
 
         Layout.fillWidth: true
-        spacing: 4
+        spacing: 2
 
         RowLayout {
             Layout.fillWidth: true
@@ -207,13 +218,13 @@ Item {
                 Layout.fillWidth: true
                 text: control.label
                 font.family: "Rubik"
-                font.pixelSize: 14
+                font.pixelSize: 13
                 color: root.palette.text
             }
             Text {
                 text: control.available ? Math.round(control.value * 100) + "%" : "Unavailable"
                 font.family: "Rubik"
-                font.pixelSize: 13
+                font.pixelSize: 12
                 color: root.palette.subtext0
             }
         }
@@ -222,10 +233,28 @@ Item {
             Layout.fillWidth: true
             spacing: 6
 
+            Item {
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                C.MaterialIcon {
+                    anchors.centerIn: parent
+                    text: control.icon
+                    size: 20
+                    weight: 700
+                    color: control.muted ? root.palette.overlay1 : root.palette.mauve
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    enabled: control.available && control.selector >= 0
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: control.muteRequested()
+                }
+            }
+
             Slider {
                 id: slider
                 Layout.fillWidth: true
-                implicitHeight: 36
+                implicitHeight: 28
                 from: control.minimum
                 to: 1
                 value: control.value
@@ -258,32 +287,14 @@ Item {
             }
 
             Item {
-                Layout.preferredWidth: 32
-                Layout.preferredHeight: 36
-                C.MaterialIcon {
-                    anchors.centerIn: parent
-                    text: control.icon
-                    size: 24
-                    weight: 700
-                    color: control.muted ? root.palette.overlay1 : root.palette.mauve
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    enabled: control.available && control.selector >= 0
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: control.muteRequested()
-                }
-            }
-
-            Item {
                 Layout.preferredWidth: 28
-                Layout.preferredHeight: 36
+                Layout.preferredHeight: 28
                 C.MaterialIcon {
                     anchors.centerIn: parent
                     visible: control.selector >= 0
                     text: "chevron_right"
                     rotation: root.selectedPicker === control.selector ? -90 : 0
-                    size: 24
+                    size: 20
                     weight: 700
                     color: root.selectedPicker === control.selector ? root.palette.mauve : root.palette.subtext0
                     Behavior on rotation { NumberAnimation { duration: 150 } }

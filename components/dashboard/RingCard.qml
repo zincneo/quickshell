@@ -14,7 +14,12 @@ Item {
     required property string subValue
     required property string subLabel
     property bool prominent: false
-    readonly property real diameter: prominent ? 196 : 164
+    property real sizeOverride: 0
+    property real valueFontSize: 0
+    readonly property real diameter: sizeOverride > 0 ? sizeOverride : (prominent ? 196 : 164)
+    readonly property real valuePixelSize: valueFontSize > 0 ? valueFontSize : (prominent ? 36 : 30)
+    readonly property real labelPixelSize: sizeOverride > 0 ? (prominent ? 12 : 10) : (prominent ? 14 : 12)
+    readonly property real subPixelSize: sizeOverride > 0 ? (prominent ? 11 : 9) : (prominent ? 14 : 12)
     readonly property string font: "Rubik"
 
     implicitWidth: diameter + 20
@@ -23,7 +28,7 @@ Item {
     Item {
         id: ring
         x: (parent.width - width - 20) / 2
-        anchors.verticalCenter: parent.verticalCenter
+        y: (parent.height - height) / 2
         width: root.diameter
         height: width
 
@@ -58,7 +63,7 @@ Item {
                 text: root.mainValue
                 color: root.palette.text
                 font.family: root.font
-                font.pixelSize: root.prominent ? 36 : 30
+                font.pixelSize: root.valuePixelSize
                 font.weight: Font.Normal
             }
             Text {
@@ -66,12 +71,12 @@ Item {
                 text: root.mainLabel
                 color: root.palette.subtext0
                 font.family: root.font
-                font.pixelSize: root.prominent ? 14 : 12
+                font.pixelSize: root.labelPixelSize
             }
         }
 
         Column {
-            x: parent.width - width / 2 - 4
+            x: sizeOverride > 0 ? parent.width - 8 : parent.width - width / 2 - 4
             y: parent.height / 2 + 10
             spacing: 3
 
@@ -80,14 +85,14 @@ Item {
                 text: root.subValue
                 color: root.palette.subtext1
                 font.family: root.font
-                font.pixelSize: root.prominent ? 14 : 12
+                font.pixelSize: root.subPixelSize
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: root.subLabel
                 color: root.palette.subtext0
                 font.family: root.font
-                font.pixelSize: root.prominent ? 14 : 12
+                font.pixelSize: root.subPixelSize
             }
         }
     }

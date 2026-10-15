@@ -19,9 +19,14 @@ Item {
         mipmap: true
     }
 
+    signal clicked()
+
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.logoIndex = 1 - root.logoIndex
+        onClicked: {
+            root.logoIndex = 1 - root.logoIndex;
+            root.clicked();
+        }
     }
 }

@@ -40,7 +40,16 @@ Item {
     property real cornerRadius: 18
     property real overlap: 8          // how far the blob sinks into the fused border
     property real openDuration: 600
+    property real closeDuration: openDuration
+    property int closeEasing: Easing.OutCubic
+    // Content fades on its own timing so it disappears before the shell finishes collapsing.
+    property real contentFadeDuration: 600
+    property real contentOpacity: 0
+    property int openEasing: Easing.OutCubic
     property real deformScale: 0      // 0 = no jelly (avoids edge detachment)
+    // Extra width the content may use beyond the left edge of the panel (for
+    // content that spans into the left bar area).
+    property real contentOverhang: 0
 
     // Hover trigger zone (window coordinates) that opens the panel.
     property rect triggerZone: Qt.rect(0, 0, 0, 0)
@@ -49,18 +58,40 @@ Item {
     default property alias content: contentInner.data
 
     readonly property bool horizontal: edge === "left" || edge === "right"
+    // Global switch for hover-driven opening. Disabled for now; set to true to restore.
+    property bool hoverOpenEnabled: false
     property bool hoverEnabled: true
     property bool triggerActive: false
     property bool active: false
     readonly property bool hovered: triggerHover.hovered || panelHover.hovered
-    readonly property bool requestedOpen: active || (hoverEnabled && (hovered || triggerActive))
+    readonly property bool requestedOpen: active || (hoverOpenEnabled && hoverEnabled && (hovered || triggerActive))
     readonly property bool open: requestedOpen && (!manager || (manager.currentPanel === root && !manager.closing && !manager.blocked))
-    property real expand: open ? 1 : 0
+    property real expand: 0
     readonly property bool fullyClosed: expand === 0 && !expandAnimation.running
 
     onRequestedOpenChanged: {
         if (manager)
             Qt.callLater(manager.update, root);
+    }
+    // Driven explicitly instead of via a Behavior, so each transition uses the
+    // open or close duration and easing it actually starts with.
+    onOpenChanged: {
+        expandAnimation.stop();
+        expandAnimation.to = open ? 1 : 0;
+        expandAnimation.duration = open ? openDuration : closeDuration;
+        expandAnimation.easing.type = open ? openEasing : closeEasing;
+        expandAnimation.start();
+        contentFadeAnimation.stop();
+        contentFadeAnimation.to = open ? 1 : 0;
+        contentFadeAnimation.duration = contentFadeDuration;
+        contentFadeAnimation.start();
+    }
+
+    NumberAnimation {
+        id: contentFadeAnimation
+        target: root
+        property: "contentOpacity"
+        easing.type: Easing.Linear
     }
     onFullyClosedChanged: {
         if (manager && fullyClosed)
@@ -71,12 +102,10 @@ Item {
             Qt.callLater(manager.update, root);
     }
 
-    Behavior on expand {
-        NumberAnimation {
-            id: expandAnimation
-            duration: root.openDuration
-            easing.type: Easing.OutCubic
-        }
+    NumberAnimation {
+        id: expandAnimation
+        target: root
+        property: "expand"
     }
 
     // Visible (on-screen) rect of the panel at the current growth.
@@ -107,12 +136,12 @@ Item {
     readonly property Item contentClip: Item {
         id: contentHolder
         parent: root.overlayLayer
-        x: root.px
+        x: root.px - root.contentOverhang
         y: root.py
-        width: root.gw
+        width: root.gw + root.contentOverhang
         height: root.gh
         clip: true
-        opacity: root.expand
+        opacity: root.contentOpacity
         visible: opacity > 0.01
 
         transform: Matrix4x4 {
@@ -128,7 +157,7 @@ Item {
 
         Item {
             id: contentInner
-            x: root.expandedX - root.px
+            x: root.expandedX - root.px + root.contentOverhang
             y: root.expandedY - root.py
             width: root.expandedWidth
             height: root.expandedHeight

@@ -6,14 +6,21 @@ import "../../services" as Svc
 Item {
     id: root
     required property var palette
+    property real ringSize: 0
+    property real ringValueSize: 0
+    property real centerSize: 0
+    property real centerValueSize: 0
+    property real ringSpacing: 24
 
     RowLayout {
         anchors.centerIn: parent
         width: parent.width - 28
-        spacing: 24
+        spacing: root.ringSpacing
 
         D.RingCard {
             Layout.fillWidth: true
+            sizeOverride: root.ringSize
+            valueFontSize: root.ringValueSize
             palette: root.palette
             accent: root.palette.mauve
             mainProgress: Svc.SysUsage.gpuTemp / 100
@@ -27,6 +34,8 @@ Item {
         D.RingCard {
             Layout.fillWidth: true
             prominent: true
+            sizeOverride: root.centerSize
+            valueFontSize: root.centerValueSize
             palette: root.palette
             accent: root.palette.mauve
             mainProgress: Svc.SysUsage.cpuTemp / 100
@@ -39,6 +48,8 @@ Item {
 
         D.RingCard {
             Layout.fillWidth: true
+            sizeOverride: root.ringSize
+            valueFontSize: root.ringValueSize
             palette: root.palette
             accent: root.palette.mauve
             mainProgress: Svc.SysUsage.storage

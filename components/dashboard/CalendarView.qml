@@ -24,7 +24,7 @@ ColumnLayout {
             horizontalAlignment: Text.AlignHCenter
             text: model.shortName
             font.family: root.font
-            font.pixelSize: 12
+            font.pixelSize: 10
             font.weight: Font.Medium
             color: root.palette.subtext0
         }
@@ -42,12 +42,12 @@ ColumnLayout {
             id: dayItem
             required property var model
             implicitWidth: 30
-            implicitHeight: 26
+            implicitHeight: 18
 
             Rectangle {
                 anchors.centerIn: parent
-                width: 24
-                height: 24
+                width: 18
+                height: 18
                 radius: width / 2
                 visible: dayItem.model.today
                 color: root.palette.mauve
@@ -57,7 +57,7 @@ ColumnLayout {
                 anchors.centerIn: parent
                 text: dayItem.model.day
                 font.family: root.font
-                font.pixelSize: 13
+                font.pixelSize: 11
                 font.weight: dayItem.model.today ? Font.Medium : Font.Normal
                 opacity: dayItem.model.month === grid.month ? 1 : 0.35
                 color: dayItem.model.today ? root.palette.base : root.palette.subtext1

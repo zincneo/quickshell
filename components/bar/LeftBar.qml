@@ -11,6 +11,9 @@ Item {
     property bool powerOpen: false
     property bool workspacesOpen: false
     property bool statusOpen: false
+    property bool logoPanelOpen: false
+    signal logoClicked()
+    readonly property real contentOpacity: logoPanelOpen ? 0 : 1
     readonly property bool powerHovered: powerButton.hovered
     readonly property rect powerZone: Qt.rect(root.x, root.y + sidebarLayout.y + powerButton.y, root.width, powerButton.height)
     readonly property bool workspacesHovered: workspaceGroup.hovered
@@ -28,13 +31,10 @@ Item {
         anchors.bottomMargin: 8
         spacing: 12
 
-        OsIcon {
-            Layout.alignment: Qt.AlignHCenter
-            palette: root.palette
-        }
-
         Workspaces {
             id: workspaceGroup
+            opacity: root.contentOpacity
+            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutCubic } }
             Layout.alignment: Qt.AlignHCenter
             palette: root.palette
             outputName: root.outputName
@@ -47,6 +47,8 @@ Item {
         }
 
         ActiveWindow {
+            opacity: root.contentOpacity
+            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutCubic } }
             Layout.alignment: Qt.AlignHCenter
             palette: root.palette
         }
@@ -56,20 +58,35 @@ Item {
         }
 
         Tray {
+            opacity: root.contentOpacity
+            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutCubic } }
             Layout.alignment: Qt.AlignHCenter
             palette: root.palette
         }
 
         Clock {
+            opacity: root.contentOpacity
+            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutCubic } }
             Layout.alignment: Qt.AlignHCenter
             palette: root.palette
         }
 
         StatusIcons {
             id: statusGroup
+            opacity: root.contentOpacity
+            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutCubic } }
             Layout.alignment: Qt.AlignHCenter
             palette: root.palette
             expanded: root.statusOpen
+        }
+
+        OsIcon {
+            opacity: root.contentOpacity
+            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutCubic } }
+            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: 6
+            palette: root.palette
+            onClicked: root.logoClicked()
         }
 
         Power {
@@ -78,6 +95,7 @@ Item {
             Layout.topMargin: 6
             palette: root.palette
             expanded: root.powerOpen
+            visible: false
         }
     }
 }

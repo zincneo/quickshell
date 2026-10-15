@@ -14,21 +14,21 @@ Item {
     RowLayout {
         anchors.fill: parent
         anchors.margins: 12
-        spacing: 16
+        spacing: 12
 
         C.AvatarLogo {
             id: avatar
             Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: 76
-            Layout.preferredHeight: 76
-            Layout.maximumWidth: 76
-            Layout.maximumHeight: 76
+            Layout.preferredWidth: 56
+            Layout.preferredHeight: 56
+            Layout.maximumWidth: 56
+            Layout.maximumHeight: 56
         }
 
         ColumnLayout {
             Layout.alignment: Qt.AlignVCenter
             Layout.fillWidth: true
-            spacing: 7
+            spacing: 4
 
             InfoRow {
                 palette: root.palette
@@ -56,21 +56,21 @@ Item {
 
         C.MaterialIcon {
             text: parent.icon
-            size: 19
+            size: 18
             color: parent.palette.mauve
         }
         Text {
             text: ":"
             color: parent.palette.subtext0
             font.family: root.font
-            font.pixelSize: 15
+            font.pixelSize: 14
         }
         Text {
             Layout.fillWidth: true
             text: parent.value
             color: parent.palette.text
             font.family: root.font
-            font.pixelSize: 15
+            font.pixelSize: 14
             elide: Text.ElideRight
         }
     }

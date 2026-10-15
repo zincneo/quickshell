@@ -20,7 +20,7 @@ PanelWindow {
 
     Components.PopoutManager {
         id: popoutManager
-        panels: [dashboard, workspaceMenu, statusMenu, powerMenu]
+        panels: [dashboard, workspaceMenu, statusMenu, powerMenu, logoPanel]
         blocked: powerConfirmation.visible
     }
 
@@ -54,29 +54,36 @@ PanelWindow {
         Region {
             x: dashboard.px
             y: dashboard.py
-            width: dashboard.gw
-            height: dashboard.gh
+            width: dashboard.expand > 0.001 ? dashboard.gw : 0
+            height: dashboard.expand > 0.001 ? dashboard.gh : 0
+        }
+
+        Region {
+            x: logoPanel.px
+            y: logoPanel.py
+            width: logoPanel.expand > 0.001 ? logoPanel.gw : 0
+            height: logoPanel.expand > 0.001 ? logoPanel.gh : 0
         }
 
         Region {
             x: powerMenu.px
             y: powerMenu.py
-            width: powerMenu.gw
-            height: powerMenu.gh
+            width: powerMenu.expand > 0.001 ? powerMenu.gw : 0
+            height: powerMenu.expand > 0.001 ? powerMenu.gh : 0
         }
 
         Region {
             x: workspaceMenu.px
             y: workspaceMenu.py
-            width: workspaceMenu.gw
-            height: workspaceMenu.gh
+            width: workspaceMenu.expand > 0.001 ? workspaceMenu.gw : 0
+            height: workspaceMenu.expand > 0.001 ? workspaceMenu.gh : 0
         }
 
         Region {
             x: statusMenu.px
             y: statusMenu.py
-            width: statusMenu.gw
-            height: statusMenu.gh
+            width: statusMenu.expand > 0.001 ? statusMenu.gw : 0
+            height: statusMenu.expand > 0.001 ? statusMenu.gh : 0
         }
 
         Region {
@@ -136,9 +143,10 @@ PanelWindow {
         shadowVerticalOffset: 10
     }
 
-    // Crisp content for popouts is drawn here, above the shadow layer.
+    // Crisp content for popouts is drawn here, above the shadow layer and the left bar.
     Item {
         id: overlayLayer
+        z: 2
         anchors.fill: parent
     }
 
@@ -212,6 +220,22 @@ PanelWindow {
         onActionRequested: selectedAction => powerConfirmation.action = selectedAction
     }
 
+    Bar.LogoPanel {
+        id: logoPanel
+        manager: popoutManager
+        blobLayer: blobLayer
+        group: blobGroup
+        overlayLayer: overlayLayer
+        screenHeight: frameWindow.height
+        leftThickness: frameWindow.leftThickness
+        verticalThickness: frameWindow.verticalThickness
+        palette: frameWindow.palette
+        onActionRequested: selectedAction => {
+            if (selectedAction === "restart")
+                Quickshell.execDetached(["systemctl", "reboot"]);
+        }
+    }
+
     Bar.LeftBar {
         id: leftBar
         anchors {
@@ -227,6 +251,8 @@ PanelWindow {
         powerOpen: powerMenu.open
         workspacesOpen: workspaceMenu.open
         statusOpen: statusMenu.open
+        logoPanelOpen: logoPanel.open
+        onLogoClicked: logoPanel.toggle()
     }
 
     Bar.PowerConfirmation {
