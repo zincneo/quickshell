@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Usage: theme.sh dark|light
-# Switches kitty, fcitx5 and niri backdrop colours to the given mode.
+# Switches kitty, qutebrowser, fcitx5 and niri backdrop colours to the given mode.
 set -eu
 
 mode="${1:?usage: theme.sh dark|light}"
@@ -15,6 +15,16 @@ sed -i "2s|^include .*|include themes/${mode}.conf|" "$conf"
 
 # SIGUSR1 makes running kitty instances reload their configuration.
 pkill -USR1 -x kitty || true
+
+# Point qutebrowser's THEME line at the matching palette (themes/<mode>.py).
+qb_conf="$(readlink -f "${XDG_CONFIG_HOME:-$HOME/.config}/qutebrowser/config.py")"
+sed -i "s|^THEME = .*|THEME = \"${mode}\"|" "$qb_conf"
+
+# Only reload when a qutebrowser instance is running: ':config-source' would
+# otherwise start a new browser window.
+if pgrep -f qutebrowser >/dev/null 2>&1; then
+    qutebrowser ':config-source' >/dev/null 2>&1 || true
+fi
 
 # Niri reloads config.kdl automatically when it changes.
 case "$mode" in
